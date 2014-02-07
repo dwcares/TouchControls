@@ -1,0 +1,38 @@
+﻿.touch-slideButtonBox {
+    margin: 25px;
+    width: 50px;
+}
+
+    .touch-slideButtonBox .touch-slideButtonLabel {
+        font-size: 9pt;
+        text-align: center;
+        height: 5px;
+    }
+
+    .touch-slideButtonBox .touch-slideButton {
+        margin: 5px;
+        border-bottom-left-radius: 50%;
+        border-bottom-right-radius: 50%;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        width: 41px;
+        height: 41px;
+        min-width: 0px;
+        font-family: 'Segoe UI Symbol';
+        text-align: center;
+        font-size: 14pt;
+        padding: 0px;
+        vertical-align: baseline;
+    }
+
+        .touch-slideButtonBox .touch-slideButton.touch-commit {
+            color: white;
+            background-color: red;
+            border-color: red;
+        }
+
+        .touch-slideButtonBox .touch-slideButton.touch-toggleOn {
+            color: black;
+            background-color: white;
+            border-color: white;
+        }
