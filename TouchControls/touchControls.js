@@ -5,13 +5,13 @@
     var pullToRefresh = WinJS.Class.define(
         function Control_ctor(element, options) {
             this.element = element || document.createElement("div");
+            element.winControl = this;
 
             // options defaults
             this._extraClass = "";
             this._pullBoxHeight = 80;
             this._pullHintLabel = "Pull to refresh";
             this._releaseHintLabel = "Release to refresh";
-
             this._refreshing = false;
             this._createVisualTree();
             this._initPullToRefreshBehavior();
@@ -25,20 +25,18 @@
                     return this._refreshing;
                 },
                 set: function (value) {
-                    var outerScroller = this.element.querySelector(".touch-outer");
-                    var pullLabel = this.element.querySelector(".touch-pullLabel");
 
                     if (this._refreshing && !value) {
                         // After the refresh, return to the default state
-                        WinJS.Utilities.removeClass(outerScroller, "touch-loading");
-                        outerScroller.disabled = false;
+                        WinJS.Utilities.removeClass(this._outerScroller, "touch-loading");
+                        this._outerScroller.disabled = false;
 
                         // Scroll back to the top of the list
-                        this._scrollTo(outerScroller, this._pullBoxHeight)
+                        this._scrollTo(this._outerScroller, this._pullBoxHeight)
                     } else if (!this._refreshing && value) {
-                        WinJS.Utilities.addClass(outerScroller, "touch-loading");
-                        outerScroller.disabled = true;
-                        pullLabel.innerText = "Loading...";
+                        WinJS.Utilities.addClass(this._outerScroller, "touch-loading");
+                        this._outerScroller.disabled = true;
+                        this._pullLabel.innerText = "Loading...";
                     }
                     this._refreshing = value;
                 }
@@ -51,7 +49,7 @@
                     this._pullHintLabel = value;
 
                     if (!this.refreshing) {
-                        this.element.querySelector(".touch-pullLabel").innerText = this._pullHintLabel;
+                        this._pullLabel.innerText = this._pullHintLabel;
                     }
                 }
             },
@@ -79,49 +77,37 @@
                     WinJS.Utilities.addClass(this.element, this._extraClass);
                 }
             },
-            complete: function() {
-                this.refreshing = false;
-            },
-            innerHTML: {
-                get: function () {
-                    return this.element.querySelector(".touch-inner").innerHTML;
-                },
-                set: function (value) {
-                    var innerContent =  this.element.querySelector(".touch-inner");
-                    if (innerContent) {
-                        innerContent.innerHTML = value;
-                    }
-                }
-            },
             _createVisualTree: function () {
-                var cachedContent = this.element.innerHTML;
-                this.element.innerHTML = '<div class="touch-outer">'
-                                       + '<div class="touch-pullBox">'
-                                       + '<progress class="touch-pullProgress win-ring"></progress>'
-                                       + '<div class="touch-pullArrow"></div>'
-                                       + '<div class="touch-pullLabel"></div></div>'
-                                       + '<div class="touch-inner"></div></div>';
+                var contentToAdd = '<div class="touch-outer">'
+                            + '<div class="touch-pullBox">'
+                            + '<progress class="touch-pullProgress win-ring"></progress>'
+                            + '<div class="touch-pullArrow"></div>'
+                            + '<div class="touch-pullLabel"></div></div>'
+                            + '<div class="touch-inner"></div></div>';
 
-                if (cachedContent) {
-                    this.innerHTML = cachedContent;
+                this.element.insertAdjacentHTML('beforeend', contentToAdd);
+
+                this._outerScroller = this.element.querySelector(".touch-outer");
+                this._innerScroller = this.element.querySelector(".touch-inner");
+                this._pullLabel = this.element.querySelector(".touch-pullLabel");
+                this._pullArrow = this.element.querySelector(".touch-pullArrow");
+
+                while (this.element.firstChild !== this._outerScroller) {
+                    this._innerScroller.appendChild(this.element.firstChild);
                 }
+
             },
             _initPullToRefreshBehavior: function () {
                 var that = this;
                 var MS_MANIPULATION_STATE_ACTIVE = 1; // A contact is touching the surface and interacting with content
                 var MS_MANIPULATION_STATE_INERTIA = 2; // The content is still moving, but contact with the surface has ended 
-
-                // Setup variables
-                var _outerScroller = this.element.querySelector(".touch-outer");
-                var _innerScroller = this.element.querySelector(".touch-inner");
-                var _pullLabel = this.element.querySelector(".touch-pullLabel");
-                var _pullArrow = this.element.querySelector(".touch-pullArrow");
+                var _outerScroller = this._outerScroller;
+                var _pullLabel = this._pullLabel;
+                var _pullArrow = this._pullArrow;
 
                 _outerScroller.scrollTop = this._pullBoxHeight;
                 _outerScroller.addEventListener("scroll", onScroll);
                 _outerScroller.addEventListener("MSManipulationStateChanged", onManipualationStateChanged);
-
-
 
                 function onScroll(e) {
                     var rotationAngle = 180 * ((that._pullBoxHeight - _outerScroller.scrollTop) / that._pullBoxHeight) + 90;
@@ -135,6 +121,12 @@
                     }
                 };
 
+                function handlePromise(promise) {
+                    promise.then(function () {
+                        that.refreshing = false;
+                    });
+                }
+
                 function onManipualationStateChanged(e) {
                     // Check to see if they lifted while pulled to the top
                     if (e.currentState == MS_MANIPULATION_STATE_INERTIA &&
@@ -142,7 +134,7 @@
                         _outerScroller.scrollTop === 0) {
 
                         that.refreshing = true;
-                        that.dispatchEvent("refresh");
+                        that.dispatchEvent("refresh", { setPromise: handlePromise });
                     }
                 };
             },
@@ -159,7 +151,6 @@
                 }
             }
         }, {
-            // Statics
         });
 
     /**************** Slide Button *******************/
