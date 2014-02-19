@@ -42,36 +42,30 @@
 
 .touch-outer {
     overflow-y: auto;
-    width: 100%;
+    width: auto;
     height: 100%;
     -ms-scroll-snap-y: mandatory snapList(80px);
     -ms-overflow-style: none;
-    display: -ms-grid;
-    -ms-grid-rows: 80px 1fr;
-    -ms-grid-columns: 1fr;
 }
 
     .touch-outer.touch-loading {
         -ms-scroll-snap-y: proximity snapList(80px);
     }
 
-
 .touch-inner {
-    -ms-grid-row: 2;
-    width: 100%;
+    width: auto;
     height: 100%;
     overflow: auto;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
 .touch-pullBox {
-    -ms-grid-row: 1;
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: 80px;
     font-size: 20pt;
     font-family: 'Segoe UI Light';
     display: -ms-grid;
-    -ms-grid-rows: 1fr;
+    -ms-grid-rows: 80px;
     -ms-grid-columns: 45px 1fr;
 }
 
