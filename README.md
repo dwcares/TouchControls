@@ -83,7 +83,7 @@ PullToRefresh is a capability you can add to existing scrollable content to add 
 * *refresh*: The user initiated a refresh
 
 ###Methods
-* *complete*: Reset the PullToRefresh control to enable refresh.
+* *none*
 
 ###Example usage
 ```html:default.html
@@ -99,9 +99,8 @@ PullToRefresh is a capability you can add to existing scrollable content to add 
 ```js:default.js
     function init() {
         var listScroller = document.querySelector(".listScroller");
-
         listScroller.addEventListener("refresh", function (e) {
-            refreshItemsAsync().then(function () { listScroller.winControl.complete(); });
+            e.detail.setPromise(refreshItemsAsync());
         });
     }
 ```
