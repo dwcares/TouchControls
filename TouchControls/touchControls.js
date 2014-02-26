@@ -385,9 +385,218 @@
           SlideDirection: { up: "up", down: "down", right: "right", left: "left" }
       });
 
+
+    /**************** GamePad *******************/
+    var gamePad = WinJS.Class.define(
+        function Control_ctor(element, options) {
+            this.element = element || document.createElement("canvas");
+            element.winControl = this;
+
+            // options defaults
+            this._leftControllerMode = TouchControls.GamePad.ControllerMode.controller;
+            this._rightControllerMode = TouchControls.GamePad.ControllerMode.controller;
+            this._leftController = { pressed: false, position: { x: 0, y: 0 } };
+            this._rightController = { pressed: false, position: { x: 0, y: 0 } };
+            this._leftControllerOpacity = 1;
+            this._rightControllerOpacity = 1;
+            this._leftControllerColor = "cyan";
+            this._rightControllerColor = "cyan";
+
+            this._leftTouchPoint = { x: 0, y: 0 };
+            this._rightTouchPoint = { x: 0, y: 0 };
+            this._leftTouchStartPoint = { x: 0, y: 0 };
+            this._rightTouchStartPoint = { x: 0, y: 0 };
+
+            this._initGamePad();
+
+            WinJS.UI.setOptions(this, options);
+        }, {
+
+            leftControllerMode: {
+                get: function () {
+                    return this._leftControllerMode;
+                },
+                set: function (value) {
+                    this._leftControllerMode = value;
+                }
+            },
+
+            rightControllerMode: {
+                get: function () {
+                    return this._rightControllerMode;
+                },
+                set: function (value) {
+                    this._rightControllerMode = value;
+                }
+            },
+
+            leftControllerOpacity: {
+                get: function () {
+                    return this._leftControllerOpacity;
+                },
+                set: function (value) {
+                    this._leftControllerOpacity = value;
+                }
+            },
+
+            rightControllerOpacity: {
+                get: function () {
+                    return this._rightControllerOpacity;
+                },
+                set: function (value) {
+                    this._rightControllerOpacity = value;
+                }
+            },
+
+            leftControllerColor: {
+                get: function () {
+                    return this._leftControllerColor;
+                },
+                set: function (value) {
+                    this._leftControllerColor = value;
+                }
+            },
+
+            rightControllerColor: {
+                get: function () {
+                    return this._rightControllerColor;
+                },
+                set: function (value) {
+                    this._rightControllerColor = value;
+                }
+            },
+
+            leftController: {
+                get: function () {
+                    return this._leftController;
+                }
+            },
+
+            rightController: {
+                get: function () {
+                    return this._rightController;
+                }
+            },
+
+            draw: function () {
+                this._drawLeftThumb();
+                this._drawRightThumb();
+            },
+
+            _drawLeftThumb: function () {
+                if (this.leftControllerMode !== TouchControls.GamePad.ControllerMode.none
+                    && this._leftController.pressed) {
+                    var tempAlpha = this._ctx.globalAlpha;
+                    this._ctx.globalAlpha = this._leftControllerOpacity;
+                    this._ctx.beginPath();
+                    this._ctx.strokeStyle = this._leftControllerColor;
+                    this._ctx.lineWidth = 2;
+                    this._ctx.arc(this._leftTouchStartPoint.x, this._leftTouchStartPoint.y, 40, 0, Math.PI * 2, true);
+                    this._ctx.stroke();
+                    this._ctx.beginPath();
+                    this._ctx.strokeStyle = this._leftControllerColor;
+                    this._ctx.arc(this._leftTouchStartPoint.x, this._leftTouchStartPoint.y, 60, 0, Math.PI * 2, true);
+                    this._ctx.stroke();
+                    this._ctx.beginPath();
+                    this._ctx.fillStyle = this._leftControllerColor;
+                    this._ctx.arc(this._leftTouchPoint.x, this._leftTouchPoint.y, 40, 0, Math.PI * 2, true);
+                    this._ctx.fill();
+                    this._ctx.globalAlpha = tempAlpha;
+                }
+            },
+
+            _drawRightThumb: function () {
+                if (this.rightControllerMode !== TouchControls.GamePad.ControllerMode.none
+                    && this._rightController.pressed) {
+                    var tempAlpha = this._ctx.globalAlpha;
+                    this._ctx.globalAlpha = this._rightControllerOpacity;
+                    this._ctx.beginPath();
+                    this._ctx.strokeStyle = this._rightControllerColor;
+                    this._ctx.lineWidth = 2;
+                    this._ctx.arc(this._rightTouchStartPoint.x, this._rightTouchStartPoint.y, 40, 0, Math.PI * 2, true);
+                    this._ctx.stroke();
+                    this._ctx.beginPath();
+                    this._ctx.strokeStyle = this._rightControllerColor;
+                    this._ctx.arc(this._rightTouchStartPoint.x, this._rightTouchStartPoint.y, 60, 0, Math.PI * 2, true);
+                    this._ctx.stroke();
+                    this._ctx.beginPath();
+                    this._ctx.fillStyle = this._rightControllerColor;
+                    this._ctx.arc(this._rightTouchPoint.x, this._rightTouchPoint.y, 40, 0, Math.PI * 2, true);
+                    this._ctx.fill();
+                    this._ctx.globalAlpha = tempAlpha;
+                }
+            },
+            _initGamePad: function () {
+                var that = this;
+
+                if (this.element.tagName.toLowerCase() !== "canvas") {
+                    throw "Element must be a canvas";
+                }
+
+                var canvas = this.element;
+                this._ctx = canvas.getContext('2d')
+                var halfWidth, halfHeight;
+
+                halfWidth = canvas.width / 2;
+                halfHeight = canvas.height / 2;
+                canvas.addEventListener('MSPointerDown', onTouchStart, false);
+                canvas.addEventListener('MSPointerMove', onTouchMove, false);
+                canvas.addEventListener('MSPointerUp', onTouchEnd, false);
+                canvas.addEventListener('resize', canvasResize, false);
+
+                function onTouchStart(e) {
+                    if (e.pointerType === 2) {
+                        if ((e.clientX < halfWidth) && that._leftControllerMode !== TouchControls.GamePad.ControllerMode.none) {
+                            that._leftTouchStartPoint = { x: e.clientX, y: e.clientY };
+                            that._leftTouchPoint = { x: e.clientX, y: e.clientY };
+                            that._leftController.pressed = true;
+                        } else if (that._rightControllerMode !== TouchControls.GamePad.ControllerMode.none) {
+                            that._rightTouchStartPoint = { x: e.clientX, y: e.clientY };
+                            that._rightTouchPoint = { x: e.clientX, y: e.clientY };
+                            that._rightController.pressed = true;
+                        }
+                    }
+                }
+
+                function onTouchMove(e) {
+                    if (e.pointerType === 2) {
+                        if ((e.clientX < halfWidth) && that._leftControllerMode === TouchControls.GamePad.ControllerMode.controller) {
+                            that._leftTouchPoint = { x: e.clientX, y: e.clientY };
+                            that._leftController.position = { x: e.clientX - that._leftTouchStartPoint.x, y: e.clientY - that._leftTouchStartPoint.y };
+                        } else if (that._righttControllerMode === TouchControls.GamePad.ControllerMode.controller) {
+                            that._rightTouchPoint = { x: e.clientX, y: e.clientY };
+                            that._rightController.position = { x: e.clientX - that._rightTouchStartPoint.x, y: e.clientY - that._rightTouchStartPoint.y };
+                        }
+                    }
+                }
+
+                function onTouchEnd(e) {
+                    if (e.pointerType === 2) {
+                        if ((e.clientX < halfWidth) && that._leftControllerMode !== TouchControls.GamePad.ControllerMode.none) {
+                            that._leftTouchPoint = { x: that._leftTouchStartPoint.x, y: that._leftTouchStartPoint.y };
+                            that._leftController.position = { x: 0, y: 0 };
+                            that._leftController.pressed = false;
+                        } else if (that._rightControllerMode !== TouchControls.GamePad.ControllerMode.none) {
+                            that._rightTouchPoint = { x: that._rightTouchStartPoint.x, y: that._rightTouchStartPoint.y };
+                            that._rightController.position = { x: 0, y: 0 };
+                            that._rightController.pressed = false;
+                        }
+                    }
+                }
+
+                function canvasResize() {
+                    halfWidth = canvas.width / 2;
+                    halfHeight = canvas.height / 2;
+                }
+            }
+        }, {
+            ControllerMode: { controller: "controller", button: "button", none: "none" }
+        });
+
     WinJS.Namespace.define("TouchControls", {
         PullToRefresh: pullToRefresh,
-        SlideButton: slideButton
+        SlideButton: slideButton,
+        GamePad: gamePad
     });
 
     WinJS.Class.mix(TouchControls.SlideButton,
@@ -397,4 +606,5 @@
     WinJS.Class.mix(TouchControls.PullToRefresh,
         WinJS.Utilities.createEventProperties("refresh"),
         WinJS.UI.DOMEventMixin);
+
 })();
