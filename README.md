@@ -6,6 +6,7 @@ TouchControls is a suite of WinJS touch-optimized controls for Windows 8 deploye
 ###Included controls
 1. SliderButton
 2. PullToRefresh
+3. GamePad
 
 ###Required references
 ```html:default.html
@@ -31,7 +32,7 @@ SlideButton is an extended appbar button with cross slide support. It supports b
 * *toggleOn* (boolean): If the button is currently in the toggled on state
 * *extraClass* (string): Extra classes applied to the control
 * *slideBehavior* (string): Either "slide" to enable cross slide behavior, or "none" to disable it.
-* *slideDirection* (TouchControls.SlideDirection): The direction to enable cross slide behavior 
+* *slideDirection* (SlideDirection): The direction to enable cross slide behavior 
 
 ###Events
 * *click*: The button has been clicked
@@ -107,4 +108,70 @@ PullToRefresh is a capability you can add to existing scrollable content to add 
 
 ###Screenshot
 ![Pull to refresh ](http://dwcares.com/wp-content/uploads/2013/10/pulltorefresh1.gif)
+
+<br/><br/>
+
+##GamePad
+---
+GamePad is a multi-touch game controller designed to be integrated into HTML5 canvas games. It has a left and right hand controller, and supports 2-dimentional and button controller modes.
+
+###Properties
+* *leftControllerMode* (ControllerMode): The controller mode to display the controller in
+* *rightControllerMode* (ControllerMode): The controller mode to display the controller in
+* *leftControllerColor* (string): The canvas color to display the controller
+* *rightControllerColor* (string):  The canvas color to display the controller
+* *leftControllerOpacity* (float): A value between 0 and 1 that indicates the opacity of the controller
+* *rightControllerOpacity* (float):  A value between 0 and 1 that indicates the opacity of the controller
+* *leftController* (Controller): A read only indicator of the current controller state
+* *rightController* (float):  * *leftControllerOpacity* (float): A value between 0 and 1 that indicates the opacity of the controller
+* *rightControllerOpacity* (float):  A value between 0 and 1 that indicates the opacity of the controller
+
+###Objects
+* *ControllerMode*
+ * controller (string): Use the 2d controller mode
+ * button (string): Use the button controller mode 
+* *Controller*
+ * pressed (boolean): Indicates the controller is currently active
+ * position (x,y): Indicates the current x, y position of the gamepad
+
+###Events
+* *none*
+
+###Methods
+* *draw*: Draw the left and right game controllers; called every frame
+
+```js:default.js
+   function init(canvas) {
+                _gamepad = new TouchControls.GamePad(jaws.canvas, {
+                    rightControllerMode: TouchControls.GamePad.ControllerMode.button,
+                    leftControllerColor: "#FFFFFF",
+                    rightControllerColor: "red",
+                    leftControllerOpacity: 0.5,
+                    rightControllerOpacity: 0.8
+                });
+            }
+
+            function update() {
+                if (_gamepad.leftController.position.x < 0 || jaws.pressed("left"))
+                    goLeft();
+
+                if (gamepad.leftController.position.x > 0 || jaws.pressed("right"))
+                    goRight();
+
+                if (gamepad.leftController.presesed || jaws.pressed("space"))
+                    attack();
+            }
+
+            function draw() {
+                _gamepad.draw();
+                drawSprites();
+                drawTiles();
+                drawWorld();
+            }
+```
+
+###Screenshot
+![GamePad in action](http://dwcares.com/wp-content/uploads/2014/02/gamepad-e1393544300322.png)
+
+
 
