@@ -113,7 +113,7 @@ PullToRefresh is a capability you can add to existing scrollable content to add 
 
 ##GamePad
 ---
-GamePad is a multi-touch game controller designed to be integrated into HTML5 canvas games. It has a left and right hand controller, and supports 2-dimentional and button controller modes.
+GamePad is a multi-touch game controller designed to be integrated into HTML5 canvas games. It has a left and right hand controller, and supports 2-dimentional and button controller modes. The design is based upon Seb Lee-Delisle's [Multi-touch game controller in JavaScript/HTML5 for iPad](http://seb.ly/2011/04/multi-touch-game-controller-in-javascripthtml5-for-ipad/)
 
 ###Properties
 * *leftControllerMode* (ControllerMode): The controller mode to display the controller in
