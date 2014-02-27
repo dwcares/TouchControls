@@ -4,9 +4,9 @@ TouchControls
 TouchControls is a suite of WinJS touch-optimized controls for Windows 8 deployed on NuGet. 
 
 ###Included controls
-1. SliderButton
-2. PullToRefresh
-3. GamePad
+1. [SliderButton] (https://github.com/dwcares/TouchControls#sliderbutton)
+2. [PullToRefresh] (https://github.com/dwcares/TouchControls#pulltorefresh)
+3. [GamePad] (https://github.com/dwcares/TouchControls#gamepad)
 
 ###Required references
 ```html:default.html
