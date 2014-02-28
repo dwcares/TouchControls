@@ -563,7 +563,7 @@
                         if ((e.clientX < halfWidth) && that._leftControllerMode === TouchControls.GamePad.ControllerMode.controller) {
                             that._leftTouchPoint = { x: e.clientX, y: e.clientY };
                             that._leftController.position = { x: e.clientX - that._leftTouchStartPoint.x, y: e.clientY - that._leftTouchStartPoint.y };
-                        } else if (that._righttControllerMode === TouchControls.GamePad.ControllerMode.controller) {
+                        } else if (that._rightControllerMode === TouchControls.GamePad.ControllerMode.controller) {
                             that._rightTouchPoint = { x: e.clientX, y: e.clientY };
                             that._rightController.position = { x: e.clientX - that._rightTouchStartPoint.x, y: e.clientY - that._rightTouchStartPoint.y };
                         }
