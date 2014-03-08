@@ -143,7 +143,7 @@
                     element.msZoomTo({
                         contentX: 0,
                         contentY: position,
-                        viewporX: 0,
+                        viewportX: 0,
                         viewportY: 0
                     });
                 } else {
